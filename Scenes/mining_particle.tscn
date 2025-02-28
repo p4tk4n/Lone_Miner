@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3 uid="uid://vg4aot8blbd3"]
+
+[ext_resource type="Texture2D" uid="uid://dwd03ulfi4wxw" path="res://Resources/Sprites/trail_particle.png" id="1_g21mm"]
+
+[node name="MiningParticle" type="CPUParticles2D"]
+emitting = false
+amount = 3
+lifetime = 0.1
+one_shot = true
+speed_scale = 0.5
+randomness = 1.0
+lifetime_randomness = 0.1
+texture = ExtResource("1_g21mm")
+direction = Vector2(0, 0)
+spread = 180.0
+initial_velocity_min = 70.71
+initial_velocity_max = 70.71
+angular_velocity_min = -396.47
+angular_velocity_max = 228.99
+linear_accel_min = -16.16
+linear_accel_max = 34.34
+radial_accel_min = 12.12
+radial_accel_max = 12.12

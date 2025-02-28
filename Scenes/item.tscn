@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=3 uid="uid://cqyoahbeqgn64"]
+
+[ext_resource type="Texture2D" uid="uid://dtn2h38lsxfyv" path="res://Resources/Sprites/coal_item.png" id="1_6o2xr"]
+[ext_resource type="Script" path="res://Scripts/item.gd" id="1_kblxi"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_3xsf5"]
+friction = 0.6
+bounce = 0.2
+absorbent = true
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_i4uh5"]
+radius = 3.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_sjq0v"]
+radius = 4.0
+
+[node name="Item" type="RigidBody2D" groups=["Items"]]
+mass = 0.5
+physics_material_override = SubResource("PhysicsMaterial_3xsf5")
+gravity_scale = 1.1
+linear_velocity = Vector2(-35.6237, -40.6189)
+angular_damp = 40.013
+script = ExtResource("1_kblxi")
+item_texture = ExtResource("1_6o2xr")
+texture_id = null
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_i4uh5")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_6o2xr")
+
+[node name="pickup_range" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="pickup_range"]
+shape = SubResource("CircleShape2D_sjq0v")
+
+[connection signal="body_entered" from="pickup_range" to="." method="_on_pickup_range_body_entered"]
+[connection signal="body_exited" from="pickup_range" to="." method="_on_pickup_range_body_exited"]

@@ -1,0 +1,46 @@
+Version Alpha
+-basic player controller
+-2d World generation using perlin noise
+-different stone types in the world
+-coal ore scattered throughout the world using noise
+-the ability to mine blocks with a small delay inbetween each block
+-item drops from their particular block
+-camera zoom as a part of the devkit, later incorporated as a part of the game 
+-ability to pickup items from the ground
+-inventory which stores the picked up items
+
+Version Alpha.1 
+-improved the jumping feature which now feels more realistic
+-improved the inventory texture and the item slot textures
+-added the iron ore which is generated in the world using noise
+-added a Animation Player and a Sprite2D instead of the AnimatedSprite2D to make adding player animations easier
+-added a tutorial screen which dissapears upon completing the instructions
+-the instruction menu can be toggled using "H"
+-added a mining animation which shows the player swinging the pickaxe when breaking a block
+-added a walking animation which shows the player bobbing up and down during walking
+-updated the stone block textures with more detail, each one got a different pattern
+
+Version Alpha.2
+-updated the enviroment background color to a darker one
+-added a light source to the player, making him more visible and making the cave enviroment look better
+-added a particle effect with a texture when breaking blocks
+-added a vignette effect, still adjusting the values to make it look fitting (it made the game
+look horror like, so im trying to boost the colors of the enviroment to something more lively).
+-added a rolling/scattering effect to the mined blocks, they now roll around when mined which is pretty cool
+-updated the code and the physics material of "item" scene.
+-added a range the player can zoom in/out in. max zoom out is 1.5 and max zoom in is 5.
+-added a highlight square when hovering over the slots in the inventory,
+the square highlights the current slot thats being hovered over
+-updated the inventory texture to be a grid of item slots, looks nicer
+
+Version Alpha.3
+-fixed the bug when mining particles spawn when mining air, now they spawn only when mining a block
+-added a hotbar that has no usage yet
+-fixed the bounds of the highlight slot in the inventory, now it can only be located inside of the inventory
+-added a basic building system, but it doesnt consume resources, the player can place blocks too fast(looks like painting),
+there is just one buidling block type and it cant be changed or selected. This is the upcoming challenge to tackle, stay tuned!
+-added a main menu with a play and exit button
+-added a fading transition when entering the game or when exiting it
+-added a lone miner logo to the main menu
+-added a moving light across the logo, it lights up the menu
+-removed the inventory system completly, it wasnt as scaleable as it needed, the hotbar couldnt be implemented with it so off it goes

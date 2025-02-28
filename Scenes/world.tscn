@@ -1,0 +1,106 @@
+[gd_scene load_steps=18 format=3 uid="uid://cxr86sg4g3e5x"]
+
+[ext_resource type="PackedScene" uid="uid://devp6n8h28ea0" path="res://Scenes/player.tscn" id="1_gvcvq"]
+[ext_resource type="Script" path="res://Scripts/world.gd" id="1_udlst"]
+[ext_resource type="TileSet" uid="uid://badac5i65sojv" path="res://Resources/Data/main_tileset.tres" id="3_dl2li"]
+[ext_resource type="Texture2D" uid="uid://cbykehsxu83po" path="res://Resources/Sprites/tutorial_0.png" id="5_lv2ht"]
+[ext_resource type="Texture2D" uid="uid://duuokoss6kvog" path="res://Resources/Sprites/tutorial_1.png" id="6_akfma"]
+[ext_resource type="PackedScene" uid="uid://b0ptav00g46sy" path="res://Scenes/inventory_node.tscn" id="7_cfqdv"]
+[ext_resource type="Texture2D" uid="uid://cv0lttmfqrptk" path="res://Resources/Sprites/tutorial_2.png" id="7_x27vv"]
+[ext_resource type="Shader" path="res://Shaders/vignette.gdshader" id="8_pyyns"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ixs4e"]
+noise_type = 3
+frequency = 0.02
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_2wmve"]
+noise = SubResource("FastNoiseLite_ixs4e")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_u36kt"]
+noise_type = 3
+frequency = 0.0235
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_d5guy"]
+noise = SubResource("FastNoiseLite_u36kt")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_w6msp"]
+noise_type = 3
+frequency = 0.0978
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_kkykt"]
+noise = SubResource("FastNoiseLite_w6msp")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_6u6ed"]
+frequency = 0.0978
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_yqql4"]
+noise = SubResource("FastNoiseLite_6u6ed")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mhwxj"]
+shader = ExtResource("8_pyyns")
+
+[node name="world" type="Node2D"]
+script = ExtResource("1_udlst")
+noise_height_texture0 = SubResource("NoiseTexture2D_2wmve")
+noise_height_texture1 = SubResource("NoiseTexture2D_d5guy")
+noise_height_texture_coal = SubResource("NoiseTexture2D_kkykt")
+noise_height_texture_iron = SubResource("NoiseTexture2D_yqql4")
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = ExtResource("3_dl2li")
+format = 2
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="TileMap"]
+
+[node name="player" parent="." instance=ExtResource("1_gvcvq")]
+
+[node name="Tutorial" type="Panel" parent="player"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -307.0
+offset_top = -275.5
+offset_right = 307.0
+offset_bottom = -76.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="tutorial0" type="TextureRect" parent="player/Tutorial"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("5_lv2ht")
+
+[node name="tutorial1" type="TextureRect" parent="player/Tutorial"]
+layout_mode = 0
+offset_left = 195.0
+offset_top = 1.0
+offset_right = 451.0
+offset_bottom = 257.0
+texture = ExtResource("6_akfma")
+
+[node name="tutorial2" type="TextureRect" parent="player/Tutorial"]
+layout_mode = 0
+offset_left = 393.0
+offset_top = -39.5
+offset_right = 649.0
+offset_bottom = 216.5
+texture = ExtResource("7_x27vv")
+
+[node name="InventoryNode" parent="player" instance=ExtResource("7_cfqdv")]
+
+[node name="MiningTimer" type="Timer" parent="."]
+wait_time = 0.125
+
+[node name="Effects" type="CanvasLayer" parent="."]
+
+[node name="vignette" type="ColorRect" parent="Effects"]
+material = SubResource("ShaderMaterial_mhwxj")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
