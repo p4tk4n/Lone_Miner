@@ -9,7 +9,6 @@ script/source = "extends Node2D
 
 const SLOTS_X = 6
 const SLOTS_Y = 3
-
 const HOTBAR_SLOTS = 6
 
 const SLOT_SIZE = Vector2(48, 48)

@@ -18,11 +18,10 @@ radius = 4.0
 mass = 0.5
 physics_material_override = SubResource("PhysicsMaterial_3xsf5")
 gravity_scale = 1.1
-linear_velocity = Vector2(-35.6237, -40.6189)
+linear_velocity = Vector2(7.27076, -33.779)
 angular_damp = 40.013
 script = ExtResource("1_kblxi")
 item_texture = ExtResource("1_6o2xr")
-texture_id = null
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_i4uh5")
