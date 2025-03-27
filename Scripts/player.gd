@@ -16,7 +16,7 @@ func _ready():
 	Global.set_player_refrence(self)
 	mining_range.mouse_entered.connect(_on_mining_range_entered)
 	mining_range.mouse_exited.connect(_on_mining_range_exited)
-	
+	camera.zoom = Vector2(1,1)
 func _physics_process(delta):
 	if not is_on_floor_only():
 		gravity = falling_gravity
@@ -68,7 +68,7 @@ func _unhandled_input(_event):
 
 	if Input.is_action_just_pressed("scroll down"):
 		var new_zoom = camera.zoom * 0.9
-		if new_zoom.x >= 1.5:  # Limit min zoom
+		if new_zoom.x >= 1:  # Limit min zoom
 			camera.zoom = new_zoom
 			Global.did_scroll = true
 

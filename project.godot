@@ -26,6 +26,7 @@ FadingEffect="*res://Scenes/fading_effect.tscn"
 window/size/viewport_width=480
 window/size/viewport_height=270
 window/size/mode=3
+window/size/resizable=false
 mouse_cursor/custom_image="res://Resources/Sprites/pickaxe_icon.png"
 
 [input]

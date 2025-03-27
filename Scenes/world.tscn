@@ -46,11 +46,12 @@ noise_height_texture1 = SubResource("NoiseTexture2D_d5guy")
 noise_height_texture_coal = SubResource("NoiseTexture2D_kkykt")
 noise_height_texture_iron = SubResource("NoiseTexture2D_yqql4")
 
+[node name="MiningTimer" type="Timer" parent="."]
+wait_time = 0.125
+
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = ExtResource("3_dl2li")
 format = 2
-
-[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="TileMap"]
 
 [node name="player" parent="." instance=ExtResource("1_gvcvq")]
 
@@ -66,12 +67,14 @@ offset_right = 307.0
 offset_bottom = -76.5
 grow_horizontal = 2
 grow_vertical = 2
+metadata/_edit_use_anchors_ = true
 
 [node name="tutorial0" type="TextureRect" parent="player/Tutorial"]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 texture = ExtResource("5_lv2ht")
+metadata/_edit_use_anchors_ = true
 
 [node name="tutorial1" type="TextureRect" parent="player/Tutorial"]
 layout_mode = 0
@@ -80,6 +83,7 @@ offset_top = 1.0
 offset_right = 451.0
 offset_bottom = 257.0
 texture = ExtResource("6_akfma")
+metadata/_edit_use_anchors_ = true
 
 [node name="tutorial2" type="TextureRect" parent="player/Tutorial"]
 layout_mode = 0
@@ -88,11 +92,6 @@ offset_top = -39.5
 offset_right = 649.0
 offset_bottom = 216.5
 texture = ExtResource("7_x27vv")
-
-[node name="InventoryNode" parent="player" instance=ExtResource("7_cfqdv")]
-
-[node name="MiningTimer" type="Timer" parent="."]
-wait_time = 0.125
 
 [node name="Effects" type="CanvasLayer" parent="."]
 
@@ -104,3 +103,18 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="hobar" type="CanvasLayer" parent="."]
+
+[node name="InventoryNode" parent="hobar" instance=ExtResource("7_cfqdv")]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 480.0
+offset_top = 445.0
+offset_right = 960.0
+offset_bottom = 493.0
+grow_vertical = 2
+scale = Vector2(2, 2)
+size_flags_horizontal = 4

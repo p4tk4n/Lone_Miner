@@ -1,38 +1,33 @@
-[gd_scene load_steps=5 format=3 uid="uid://b0ptav00g46sy"]
+[gd_scene load_steps=4 format=3 uid="uid://b0ptav00g46sy"]
 
-[ext_resource type="Texture2D" uid="uid://d1dcr8fxn0cnm" path="res://Resources/Sprites/inventory_bg.png" id="1_wuxrp"]
+[ext_resource type="Texture2D" uid="uid://dkyyldpurmcl" path="res://Resources/Sprites/hotbar_bg.png" id="1_xxncg"]
 [ext_resource type="Texture2D" uid="uid://dpm4hf64gxkxk" path="res://Resources/Sprites/highlight_slot.png" id="2_82vpx"]
-[ext_resource type="Texture2D" uid="uid://dkyyldpurmcl" path="res://Resources/Sprites/hotbar_bg.png" id="3_ydo2m"]
 
 [sub_resource type="GDScript" id="GDScript_cd5lr"]
-script/source = "extends Node2D
+script/source = "extends Control
 
-const SLOTS_X = 6
-const SLOTS_Y = 3
-const HOTBAR_SLOTS = 6
+const SLOTS_X =10
+const SLOTS_Y = 1
 
 const SLOT_SIZE = Vector2(48, 48)
 const HALF_SLOT = 0.5 * SLOT_SIZE
 var hovered_index = 0
-const MAX_SLOTS = (SLOTS_X * SLOTS_Y) + HOTBAR_SLOTS
+const MAX_SLOTS = SLOTS_X * SLOTS_Y
 
 @onready var inventory_bg = $inventory_bg
-@onready var hotbar_bg = $hotbar_bg
 @onready var highlight_slot = $highlight_slot
 var inventory_item = preload(\"res://Scenes/inventory_item.tscn\")
 # Offset to account for the centered inventory_bg (-144, -72)
-
-var inventory_offset = Vector2(-144, -72)
-var hotbar_offset = inventory_offset + Vector2(0,144)
+var offset_x = 0
+var offset_y = 0
+var inventory_offset = Vector2(offset_x,offset_y)
 var items : Array
 var picked_item = null
 var picked_index = -1
 
 func _ready():
 	highlight_slot.visible = Global.player_inventory_open
-	inventory_bg.position = inventory_offset
-	hotbar_bg.position = hotbar_offset
-	hotbar_bg.visible = true
+	#inventory_bg.position = inventory_offset
 	Global.inventory_updated.connect(place_items)
 	Global.inventory_updated.connect(update_item_positions)
 	items.resize(MAX_SLOTS)
@@ -49,7 +44,7 @@ func place_items():
 			#remove_child(children[i])
 			
 	for child in get_children():
-		if child is Node2D and (child != inventory_bg and child != hotbar_bg and child != highlight_slot):
+		if child is Node2D and (child != inventory_bg and child != highlight_slot):
 			remove_child(child) 
 	items = []
 	items.resize(MAX_SLOTS)
@@ -141,43 +136,22 @@ func _process(delta):
 		update_item_positions()
 "
 
-[node name="InventoryNode" type="Node2D"]
+[node name="InventoryNode" type="Control"]
+layout_mode = 3
+anchors_preset = 0
 script = SubResource("GDScript_cd5lr")
 
 [node name="inventory_bg" type="TextureRect" parent="."]
 z_index = 10
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -288.0
-offset_top = -144.0
-grow_horizontal = 0
-grow_vertical = 0
-texture = ExtResource("1_wuxrp")
+layout_mode = 1
+offset_right = 288.0
+offset_bottom = 48.0
+size_flags_horizontal = 8
+texture = ExtResource("1_xxncg")
 
 [node name="highlight_slot" type="TextureRect" parent="."]
 z_index = 10
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -24.0
-offset_top = -24.0
-offset_right = 24.0
-offset_bottom = 24.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("2_82vpx")
-
-[node name="hotbar_bg" type="TextureRect" parent="."]
-z_index = 10
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -288.0
+layout_mode = 1
+offset_right = 48.0
 offset_bottom = 48.0
-grow_horizontal = 0
-texture = ExtResource("3_ydo2m")
+texture = ExtResource("2_82vpx")

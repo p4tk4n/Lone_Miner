@@ -8,7 +8,7 @@ var world_seed = randi()
 
 @onready var tilemap = $TileMap
 @onready var mining_timer = $MiningTimer
-@onready var player_inventory = $player/InventoryNode
+@onready var player_inventory = $hobar/InventoryNode
 @onready var tutorial_ui = $player/Tutorial
 
 @onready var mining_particle = preload("res://Scenes/mining_particle.tscn")
@@ -48,7 +48,8 @@ func _ready():
 	mining_timer.timeout.connect(_on_mining_timer_timeout)
 	generate_world()
 	$Effects/vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
+	player_inventory.visible = true
+	
 #values: [min,max,[layer,source_id,[atlas_x,atlas_y]]]
 func noise_to_tiles(input_noise,lists):
 	for x in range(-width/2.0,width/2.0):
@@ -195,11 +196,11 @@ func _unhandled_input(_event):
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 		place()
 	
-	if Input.is_action_just_pressed("open_inventory"):
-		Global.player_inventory_open = !Global.player_inventory_open  
-		player_inventory.visible = Global.player_inventory_open
-		if not Global.did_tab:
-			Global.did_tab = true
+	#if Input.is_action_just_pressed("open_inventory"):
+		#Global.player_inventory_open = !Global.player_inventory_open  
+		#player_inventory.visible = Global.player_inventory_open
+		#if not Global.did_tab:
+			#Global.did_tab = true
 			
 	if Input.is_action_just_pressed("show_help"):
 		tutorial_ui.visible = not tutorial_ui.visible	

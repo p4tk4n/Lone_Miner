@@ -9,7 +9,6 @@ var delay_inbetween_mining = 0.125
 var player_inventory_open = false
 var player : Node = null
 var inventory = []
-
 var did_scroll = false
 var did_tab = false 
 var did_mine = false
@@ -42,12 +41,13 @@ func add_item(item):
 				
 	inventory_updated.emit()
 		
-
-
 func remove_item(item):
+	var index = inventory.find(item)
+	inventory.remove_at(index)
 	inventory_updated.emit()
 	
-func increase_inventory_size():
+func increase_inventory_size(new_size):
+	inventory.resize(new_size)
 	inventory_updated.emit()
 
 func set_player_refrence(player_input):
