@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://cxr86sg4g3e5x"]
+[gd_scene load_steps=20 format=3 uid="uid://cxr86sg4g3e5x"]
 
 [ext_resource type="PackedScene" uid="uid://devp6n8h28ea0" path="res://Scenes/player.tscn" id="1_gvcvq"]
 [ext_resource type="Script" path="res://Scripts/world.gd" id="1_udlst"]
@@ -36,6 +36,12 @@ frequency = 0.0978
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_yqql4"]
 noise = SubResource("FastNoiseLite_6u6ed")
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_rv6tw"]
+frequency = 0.369
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_gnsoj"]
+noise = SubResource("FastNoiseLite_rv6tw")
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mhwxj"]
 shader = ExtResource("8_pyyns")
 
@@ -45,6 +51,7 @@ noise_height_texture0 = SubResource("NoiseTexture2D_2wmve")
 noise_height_texture1 = SubResource("NoiseTexture2D_d5guy")
 noise_height_texture_coal = SubResource("NoiseTexture2D_kkykt")
 noise_height_texture_iron = SubResource("NoiseTexture2D_yqql4")
+noise_height_texture_ruby = SubResource("NoiseTexture2D_gnsoj")
 
 [node name="MiningTimer" type="Timer" parent="."]
 wait_time = 0.125
@@ -105,9 +112,9 @@ grow_vertical = 2
 color = Color(0, 0, 0, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="hobar" type="CanvasLayer" parent="."]
+[node name="hotbar" type="CanvasLayer" parent="."]
 
-[node name="InventoryNode" parent="hobar" instance=ExtResource("7_cfqdv")]
+[node name="InventoryNode" parent="hotbar" instance=ExtResource("7_cfqdv")]
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5

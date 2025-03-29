@@ -5,9 +5,10 @@ extends Node2D
 const ITEM_COAL = preload("res://Resources/Sprites/coal_item.png")
 const ITEM_IRON = preload("res://Resources/Sprites/iron_item.png")
 const ITEM_STONE = preload("res://Resources/Sprites/stone_item.png")
+const ITEM_RUBY = preload("res://Resources/Sprites/ruby_item.png")
 
 const ITEM_TEXTURES = [
-	ITEM_COAL,ITEM_IRON,ITEM_STONE
+	ITEM_COAL,ITEM_IRON,ITEM_STONE,ITEM_RUBY
 ]
 
 func get_texture(index: int) -> Texture:

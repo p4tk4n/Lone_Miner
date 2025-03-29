@@ -71,7 +71,6 @@ func _unhandled_input(_event):
 		if new_zoom.x >= 1:  # Limit min zoom
 			camera.zoom = new_zoom
 			Global.did_scroll = true
-
 	
 func _on_mining_range_entered():
 	Global.player_can_mine = true

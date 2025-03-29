@@ -5,10 +5,11 @@ var world_seed = randi()
 @export var noise_height_texture1 : NoiseTexture2D
 @export var noise_height_texture_coal : NoiseTexture2D
 @export var noise_height_texture_iron : NoiseTexture2D
+@export var noise_height_texture_ruby : NoiseTexture2D
 
 @onready var tilemap = $TileMap
 @onready var mining_timer = $MiningTimer
-@onready var player_inventory = $hobar/InventoryNode
+@onready var player_inventory = $hotbar/InventoryNode
 @onready var tutorial_ui = $player/Tutorial
 
 @onready var mining_particle = preload("res://Scenes/mining_particle.tscn")
@@ -16,6 +17,7 @@ var world_seed = randi()
 @onready var coal_texture = preload("res://Resources/Sprites/coal_item.png")
 @onready var stone_texture = preload("res://Resources/Sprites/stone_item.png")
 @onready var iron_texture = preload("res://Resources/Sprites/iron_item.png")
+@onready var ruby_texture = preload("res://Resources/Sprites/ruby_item.png")
 
 var buildable_blocks = ["Stone"]
 
@@ -23,6 +25,7 @@ var noise0 : Noise
 var noise1 : Noise 
 var noise_coal : Noise 
 var noise_iron : Noise 
+var noise_ruby : Noise
 
 var noises
 
@@ -41,7 +44,9 @@ func _ready():
 	noise1 = noise_height_texture1.noise 
 	noise_coal = noise_height_texture_coal.noise 
 	noise_iron = noise_height_texture_iron.noise 
-	noises = [noise0,noise1,noise_coal,noise_iron]
+	noise_ruby = noise_height_texture_ruby.noise
+	
+	noises = [noise0,noise1,noise_coal,noise_iron,noise_ruby]
 	player_inventory.visible = Global.player_inventory_open
 	for n in noises:
 		print(world_seed)
@@ -102,6 +107,7 @@ func generate_world():
 	# Generate coal only in valid stone/rock tiles
 	generate_ore(noise_coal,0.4,1,Vector2i(1,0),stone_tiles)
 	generate_ore(noise_iron,0.49,2,Vector2i(1,0),stone_tiles)
+	generate_ore(noise_ruby,0.69,4,Vector2i(1,0),stone_tiles)
 	
 func generate_ore(noise: Noise, threshold: float, source_id: int, _atlas_coords: Vector2i, valid_tiles: Array):
 	for x in range(-width / 2.0, width / 2.0):
@@ -132,7 +138,9 @@ func spawn_drop(pos, quantity, item_type, item_name, texture):
 		drop_instance.texture_id = 1
 	elif item_type == "stone":
 		drop_instance.texture_id = 2
-		
+	elif item_type == "ruby":
+		drop_instance.texture_id = 3
+	
 	add_child(drop_instance)
 
 func get_tile_under_mouse():
@@ -178,6 +186,9 @@ func mine():
 		
 		elif source_id == 2:
 			spawn_drop(Vector2(tilemap.map_to_local(tile_pos)),1,"iron","Iron",iron_texture)
+		
+		elif source_id == 4:
+			spawn_drop(Vector2(tilemap.map_to_local(tile_pos)),1,"ruby","Ruby",ruby_texture)
 		
 		tilemap.erase_cell(0, tile_pos)  # Remove the tile
 			

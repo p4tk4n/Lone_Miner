@@ -131,20 +131,20 @@ func _process(_delta):
 			Global.inventory_updated.emit()
 			update_item_positions()
 	
-	if Input.is_action_just_released(\"mouse_left\"):
-		var item_in_slot = get_item(hovered_index)
-		if not item_in_slot:
-			var placed = false
-			if hovered_index >= 0 and hovered_index < MAX_SLOTS:
-				placed = set_item(picked_item,hovered_index)
-			if not placed:
-				set_item(picked_item,picked_index)
-		else:
-			#swap items
-			set_item(item_in_slot,picked_index)
-			set_item(picked_item,hovered_index)
-		picked_item = null
-		update_item_positions()
+	#if Input.is_action_just_released(\"mouse_left\"):
+		#var item_in_slot = get_item(hovered_index)
+		#if not item_in_slot:
+			#var placed = false
+			#if hovered_index >= 0 and hovered_index < MAX_SLOTS:
+				#placed = set_item(picked_item,hovered_index)
+			#if not placed:
+				#set_item(picked_item,picked_index)
+		#else:
+			##swap items
+			#set_item(item_in_slot,picked_index)
+			#set_item(picked_item,hovered_index)
+		#picked_item = null
+		#update_item_positions()
 "
 
 [node name="InventoryNode" type="Control"]
