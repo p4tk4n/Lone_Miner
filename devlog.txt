@@ -44,3 +44,9 @@ there is just one buidling block type and it cant be changed or selected. This i
 -added a lone miner logo to the main menu
 -added a moving light across the logo, it lights up the menu
 -removed the inventory system completly, it wasnt as scaleable as it needed, the hotbar couldnt be implemented with it so off it goes
+-made the inventory work again, now its in  a hotbar form and its visibility can be toggled using "Tab"
+-number keys 1-9 and 0 can be used to switch between hotbar slots
+-added a BUILDABLE BLOCK category to blocks, currently its only stone
+-building now requires a BUILDABLE BLOCK to be held in hand and the quantity of the block to be > 0
+-building depletes the held BUILDABLE BLOCK
+

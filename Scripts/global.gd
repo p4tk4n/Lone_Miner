@@ -6,7 +6,7 @@ var HEIGHT := 400
 var player_can_mine = false
 var delay_inbetween_mining = 0.125
 
-var player_inventory_open = false
+var player_inventory_open = true
 var player : Node = null
 var inventory = []
 var did_scroll = false

@@ -18,7 +18,7 @@ func get_texture(index: int) -> Texture:
 @export var item_id = -1
 var current_id = -1
 
-func _process(delta):
+func _process(_delta):
 	if current_id != item_id:
 		current_id = item_id
 		$Sprite2D.texture = get_texture(item_id)

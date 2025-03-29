@@ -17,6 +17,8 @@ var world_seed = randi()
 @onready var stone_texture = preload("res://Resources/Sprites/stone_item.png")
 @onready var iron_texture = preload("res://Resources/Sprites/iron_item.png")
 
+var buildable_blocks = ["Stone"]
+
 var noise0 : Noise 
 var noise1 : Noise 
 var noise_coal : Noise 
@@ -101,7 +103,7 @@ func generate_world():
 	generate_ore(noise_coal,0.4,1,Vector2i(1,0),stone_tiles)
 	generate_ore(noise_iron,0.49,2,Vector2i(1,0),stone_tiles)
 	
-func generate_ore(noise: Noise, threshold: float, source_id: int, atlas_coords: Vector2i, valid_tiles: Array):
+func generate_ore(noise: Noise, threshold: float, source_id: int, _atlas_coords: Vector2i, valid_tiles: Array):
 	for x in range(-width / 2.0, width / 2.0):
 		for y in range(-height / 2.0, height / 2.0):
 			var noise_val = noise.get_noise_2d(x, y)
@@ -123,6 +125,7 @@ func spawn_drop(pos, quantity, item_type, item_name, texture):
 	drop_instance.item_type = item_type
 	drop_instance.item_name = item_name
 	drop_instance.item_texture = texture
+	
 	if item_type == "coal":
 		drop_instance.texture_id = 0
 	elif item_type == "iron":
@@ -137,12 +140,16 @@ func get_tile_under_mouse():
 	return tilemap.local_to_map(mouse_pos)  
 
 func place():
+	var current_block = Global.inventory[player_inventory.hovered_index]
+	
 	var tile_pos = get_tile_under_mouse()
 	var current_tile = tilemap.get_cell_source_id(0, tile_pos)
 	
-	if current_tile == -1:
+	if current_tile == -1 and current_block and current_block["item_name"] in buildable_blocks:
 		tilemap.set_cell(0,tile_pos,3,Vector2i(1,0))
-	
+		current_block["quantity"] -= 1
+		Global.inventory_updated.emit()
+		
 func mine():
 	var tile_pos = get_tile_under_mouse()
 	var source_id = tilemap.get_cell_source_id(0, tile_pos)  # Get the tile source ID
@@ -163,7 +170,7 @@ func mine():
 		
 	elif atlas_coords.y == 3:
 		AudioManager.play_random_pitch(AudioManager.mining_block,0.7,1.1)
-		if source_id == 0:
+		if source_id == 0 or source_id == 3:
 			spawn_drop(Vector2(tilemap.map_to_local(tile_pos)),1,"stone","Stone",stone_texture)
 			
 		elif source_id == 1:
@@ -196,11 +203,11 @@ func _unhandled_input(_event):
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 		place()
 	
-	#if Input.is_action_just_pressed("open_inventory"):
-		#Global.player_inventory_open = !Global.player_inventory_open  
-		#player_inventory.visible = Global.player_inventory_open
-		#if not Global.did_tab:
-			#Global.did_tab = true
+	if Input.is_action_just_pressed("open_inventory"):
+		Global.player_inventory_open = !Global.player_inventory_open  
+		player_inventory.visible = Global.player_inventory_open
+		if not Global.did_tab:
+			Global.did_tab = true
 			
 	if Input.is_action_just_pressed("show_help"):
 		tutorial_ui.visible = not tutorial_ui.visible	

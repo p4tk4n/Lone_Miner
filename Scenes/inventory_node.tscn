@@ -11,7 +11,7 @@ const SLOTS_Y = 1
 
 const SLOT_SIZE = Vector2(48, 48)
 const HALF_SLOT = 0.5 * SLOT_SIZE
-var hovered_index = 0
+var hovered_index = 1
 const MAX_SLOTS = SLOTS_X * SLOTS_Y
 
 @onready var inventory_bg = $inventory_bg
@@ -24,6 +24,7 @@ var inventory_offset = Vector2(offset_x,offset_y)
 var items : Array
 var picked_item = null
 var picked_index = -1
+
 
 func _ready():
 	highlight_slot.visible = Global.player_inventory_open
@@ -106,20 +107,30 @@ func set_item(item: Item, index : int):
 		return true
 	return false
 	
-func _process(delta):
-	var l_mpos = get_local_mouse_position()
-	var hovered_index = get_index_by_pos(l_mpos)
+func _process(_delta):
+	for i in range(1,11):
+		if Input.is_action_just_pressed(str(i)):
+			hovered_index = i - 1
+			print(hovered_index)
+			
 	var highlight_slot_pos = get_pos_by_index(hovered_index)
 	highlight_slot.visible = Global.player_inventory_open
 	highlight_slot.position = highlight_slot_pos
-	if Input.is_action_just_pressed(\"mouse_left\"):
-		var item = get_item(hovered_index)
-		if item:
-			picked_item = item
-			picked_index = hovered_index
-	if picked_item:
-		picked_item.position = get_local_mouse_position()
-		
+	
+	#if Input.is_action_just_pressed(\"mouse_left\"):
+		#var item = get_item(hovered_index)
+		#if item:
+			#picked_item = item
+			#picked_index = hovered_index
+	#if picked_item:
+		#picked_item.position = get_local_mouse_position()
+	
+	for i in range(Global.inventory.size()):
+		if Global.inventory[i] and Global.inventory[i][\"quantity\"] == 0:
+			Global.inventory[i] = null
+			Global.inventory_updated.emit()
+			update_item_positions()
+	
 	if Input.is_action_just_released(\"mouse_left\"):
 		var item_in_slot = get_item(hovered_index)
 		if not item_in_slot:
