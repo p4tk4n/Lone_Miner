@@ -1,6 +1,6 @@
 extends Node
 
-var WIDTH := 400
+var WIDTH := 1_000
 var HEIGHT := 400
 
 var player_can_mine = false

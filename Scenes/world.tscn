@@ -60,6 +60,8 @@ wait_time = 0.125
 tile_set = ExtResource("3_dl2li")
 format = 2
 
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="TileMap"]
+
 [node name="player" parent="." instance=ExtResource("1_gvcvq")]
 
 [node name="Tutorial" type="Panel" parent="player"]

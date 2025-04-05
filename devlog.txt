@@ -43,10 +43,22 @@ there is just one buidling block type and it cant be changed or selected. This i
 -added a fading transition when entering the game or when exiting it
 -added a lone miner logo to the main menu
 -added a moving light across the logo, it lights up the menu
+
+Version Alpha.4
 -removed the inventory system completly, it wasnt as scaleable as it needed, the hotbar couldnt be implemented with it so off it goes
 -made the inventory work again, now its in  a hotbar form and its visibility can be toggled using "Tab"
 -number keys 1-9 and 0 can be used to switch between hotbar slots
 -added a BUILDABLE BLOCK category to blocks, currently its only stone
 -building now requires a BUILDABLE BLOCK to be held in hand and the quantity of the block to be > 0
 -building depletes the held BUILDABLE BLOCK
+-added a new ore called ruby - its a large precious gem and its very rare
+-now it has no use but its intended to be used as a trading currency with the locals ;D
+
+Version Alpha.5
+-made the sfx 10db louder 
+-moved the whole world, quite literally. now the topleft of the world is 0,0 and the center is width/2 and height/2
+-top world terrain now generates, including dirt, grass blocks and gravel
+-the terrain generates in a sine-like wave
+
+
 

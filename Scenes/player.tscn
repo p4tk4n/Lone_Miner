@@ -117,6 +117,7 @@ position = Vector2(0, -0.03125)
 shape = SubResource("RectangleShape2D_xn8oq")
 
 [node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.01, 0.01)
 
 [node name="MiningRange" type="Area2D" parent="."]
 

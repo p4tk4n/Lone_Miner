@@ -9,8 +9,10 @@ script = ExtResource("1_3ruhp")
 
 [node name="block_pickup" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("2_xembh")
+volume_db = 10.0
 max_distance = 1e+10
 
 [node name="mining_block" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("3_wejcr")
+volume_db = 10.0
 max_distance = 1e+10

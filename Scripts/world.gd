@@ -32,6 +32,9 @@ var noises
 var width : int = Global.WIDTH
 var height : int = Global.HEIGHT
 
+var world_thread = Thread.new()
+var world_data = []
+
 var stone_tiles = [
 	Vector2i(6, 0),   # Stone base
 	Vector2i(2, 0),   # Light gray rock
@@ -53,15 +56,17 @@ func _ready():
 		n.seed = world_seed
 	
 	mining_timer.timeout.connect(_on_mining_timer_timeout)
-	generate_world()
+	_generate_world()
 	$Effects/vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	player_inventory.visible = true
-	
+	player_inventory.visible = true			
+
 #values: [min,max,[layer,source_id,[atlas_x,atlas_y]]]
 func noise_to_tiles(input_noise,lists):
-	for x in range(-width/2.0,width/2.0):
-		for y in range(-height/2.0,height/2.0):
+	for x in range(0,width):
+		for y in range(0,height):
 			var noise_val = input_noise.get_noise_2d(x,y)
+			if x == 0 or y == 0 or x == width-1 or y == height-1:
+				noise_val += 0.5
 			for values in lists:
 				if values[0] == null:
 					if noise_val < values[1]:
@@ -89,9 +94,50 @@ func noise_to_tiles(input_noise,lists):
 						values[2][1],
 						Vector2i(values[2][2][0],values[2][2][1])
 						)
+
+func wave_terrain():
+	# Bounds
+	var top: int = 20  # Adjusted for better terrain positioning
+	var left: int = 0
+	var right: int = width
+	
+	var a: float = 0
+	var b: float = 0
+	
+	var block_type: int = 0
+	
+	for x in range(left, right):
+		#smartass meth eq for the sin wave-like terrain
+		var map_height: int = int(sin(a) * 8 + sin(b) * 6)
+		
+		#fill terrain from generated height downwards
+		for y in range(top - map_height, top+randi_range(20,22)):
+			#if the current block is the 1st one its set to block type 1 (grassblock)
+			#random blocks are also placed
 			
-func generate_world():
+			if randf_range(0,5) > 4.8:
+				block_type = 2 #bt 2 is gravel
+			else:
+				block_type = 0 #bt 0 is dirt
+				
+			if y == top-map_height:
+				block_type = 1 #bt 1 is grass
+
+			match block_type:
+				0:
+					tilemap.set_cell(0, Vector2i(x, y-40), 5, Vector2i(2, 0))
+				1:
+					tilemap.set_cell(0, Vector2i(x, y-40), 5, Vector2i(1, 0))
+				2:
+					tilemap.set_cell(0, Vector2i(x, y-40), 5, Vector2i(3, 0))
+				_:
+					tilemap.set_cell(0, Vector2i(x, y-40), 5, Vector2i(2, 0))
+		a += 0.081
+		b += 0.045
+	
+func _generate_world():
 	# Main terrain generation
+	
 	noise_to_tiles(noise1,[
 		[-0.1, 0.0, [0, 0, [5, 0]]],   # Brownish ground
 		[0.0, null, [0, 0, [6, 0]]],   # Default ground
@@ -108,6 +154,7 @@ func generate_world():
 	generate_ore(noise_coal,0.4,1,Vector2i(1,0),stone_tiles)
 	generate_ore(noise_iron,0.49,2,Vector2i(1,0),stone_tiles)
 	generate_ore(noise_ruby,0.69,4,Vector2i(1,0),stone_tiles)
+	wave_terrain()
 	
 func generate_ore(noise: Noise, threshold: float, source_id: int, _atlas_coords: Vector2i, valid_tiles: Array):
 	for x in range(-width / 2.0, width / 2.0):
