@@ -59,6 +59,7 @@ Version Alpha.5
 -moved the whole world, quite literally. now the topleft of the world is 0,0 and the center is width/2 and height/2
 -top world terrain now generates, including dirt, grass blocks and gravel
 -the terrain generates in a sine-like wave
-
+-changed the texture of the ruby to a rounder texture, kept the pallete the same
+-i got a idea! heureka! i want to add a console for debugging!!! > let me do this quik
 
 

@@ -14,10 +14,11 @@ var world_seed = randi()
 
 @onready var mining_particle = preload("res://Scenes/mining_particle.tscn")
 @onready var item = preload("res://Scenes/item.tscn")
-@onready var coal_texture = preload("res://Resources/Sprites/coal_item.png")
-@onready var stone_texture = preload("res://Resources/Sprites/stone_item.png")
-@onready var iron_texture = preload("res://Resources/Sprites/iron_item.png")
-@onready var ruby_texture = preload("res://Resources/Sprites/ruby_item.png")
+
+var coal_texture = Global.item_textures["coal"]
+var iron_texture = Global.item_textures["iron"]
+var stone_texture = Global.item_textures["stone"]
+var ruby_texture = Global.item_textures["ruby"]
 
 var buildable_blocks = ["Stone"]
 

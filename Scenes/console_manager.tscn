@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://dmld02v1yqfvx"]
+
+[ext_resource type="Script" path="res://Scripts/console_manager.gd" id="1_nke8d"]
+
+[sub_resource type="SystemFont" id="SystemFont_pk6r5"]
+generate_mipmaps = true
+subpixel_positioning = 0
+
+[sub_resource type="Theme" id="Theme_gt075"]
+default_font = SubResource("SystemFont_pk6r5")
+default_font_size = 24
+
+[sub_resource type="SystemFont" id="SystemFont_iijhp"]
+generate_mipmaps = true
+subpixel_positioning = 0
+
+[node name="ConsoleManager" type="Node"]
+script = ExtResource("1_nke8d")
+
+[node name="textInput" type="LineEdit" parent="."]
+offset_right = 480.0
+offset_bottom = 48.0
+scale = Vector2(1.5, 1.5)
+theme = SubResource("Theme_gt075")
+theme_override_fonts/font = SubResource("SystemFont_iijhp")
+placeholder_text = "command: "
+context_menu_enabled = false
+virtual_keyboard_enabled = false
+drag_and_drop_selection_enabled = false
+
+[connection signal="text_changed" from="textInput" to="." method="_on_text_input_text_changed"]

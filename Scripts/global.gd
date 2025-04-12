@@ -1,6 +1,6 @@
 extends Node
 
-var WIDTH := 1_000
+var WIDTH := 400
 var HEIGHT := 400
 
 var player_can_mine = false
@@ -16,9 +16,25 @@ var did_mine = false
 var current_player_state = "idle"
 
 signal inventory_updated
+var default_inventory_size = 10
+
+var item_textures: Dictionary = {
+	"coal": preload("res://Resources/Sprites/coal_item.png"),
+	"stone": preload("res://Resources/Sprites/stone_item.png"),
+	"iron": preload("res://Resources/Sprites/iron_item.png"),
+	"ruby": preload("res://Resources/Sprites/ruby_item.png")
+}
+
+var item_textures_keys = item_textures.keys()
 
 func _ready():
-	inventory.resize(18)
+	inventory.resize(default_inventory_size)
+
+func blockToPixel(pos):
+	return pos * 16
+
+func pixelToBlock(pos):
+	return pos / 16
 
 func count_items(array : Array):
 	var items : int = 0
@@ -45,6 +61,25 @@ func remove_item(item):
 	var index = inventory.find(item)
 	inventory.remove_at(index)
 	inventory_updated.emit()
+
+func clear_inventory(item):
+	var temp: Array = [] #tu su veci na odstranenie
+	#neni dobre removovat veci z arr ked cez neho iterujem takze sa to odstrani potom
+	
+	if item == null:
+		inventory.clear()
+		
+	else:
+		for i in range(inventory.size()):
+			print("item: " + item)
+			print(inventory[i])
+			if inventory[i]:
+				if item == inventory[i]["item_type"]:
+					temp.append(inventory[i])
+		for i in range(temp.size()):
+			inventory.erase(temp[i])
+
+	increase_inventory_size(default_inventory_size)
 	
 func increase_inventory_size(new_size):
 	inventory.resize(new_size)

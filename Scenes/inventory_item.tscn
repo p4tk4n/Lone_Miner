@@ -1,7 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://ck84y5s6uxpvk"]
+[gd_scene load_steps=4 format=3 uid="uid://ck84y5s6uxpvk"]
 
 [ext_resource type="Script" path="res://Scripts/inventory_item.gd" id="1_0uagh"]
-[ext_resource type="Texture2D" uid="uid://dtn2h38lsxfyv" path="res://Resources/Sprites/coal_item.png" id="2_8yhgw"]
 
 [sub_resource type="SystemFont" id="SystemFont_jsh7x"]
 
@@ -16,7 +15,6 @@ script = ExtResource("1_0uagh")
 item_id = 0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_8yhgw")
 
 [node name="amountLabel" type="Label" parent="."]
 offset_left = -3.33333
