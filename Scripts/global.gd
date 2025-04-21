@@ -1,7 +1,7 @@
 extends Node
 
-var WIDTH := 400
-var HEIGHT := 400
+var WIDTH := 1000
+var HEIGHT := 1000
 
 var player_can_mine = false
 var delay_inbetween_mining = 0.12
@@ -17,6 +17,14 @@ var current_player_state = "idle"
 
 signal inventory_updated
 var default_inventory_size = 10
+
+var god_mode = false
+
+var CHUNK_SIZE = 16
+var render_distance = 2
+var top_of_the_world = 0
+var cave_start = 20
+var rock_bottom = 300
 
 var item_textures: Dictionary = {
 	"coal": preload("res://Resources/Sprites/coal_item.png"),

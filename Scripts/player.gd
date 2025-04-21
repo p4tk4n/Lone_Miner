@@ -19,21 +19,35 @@ func _ready():
 	camera.zoom = Vector2(1,1)
 	position = Vector2i(3200,-800)
 	
-	
 func _physics_process(delta):
-	if not is_on_floor_only():
-		gravity = falling_gravity
-		velocity.y += gravity * delta
+	if Global.god_mode:
+		falling_gravity = 0
 	else:
-		gravity = default_gravity
+		falling_gravity = 1200
 		
-	if Input.is_action_pressed("player_jump") and is_on_floor():
+	if not Global.god_mode:
+		if not is_on_floor_only():
+			gravity = falling_gravity
+			velocity.y += gravity * delta
+		else:
+			gravity = default_gravity
+			
+	else:
+		if Input.is_action_pressed("player_down"):
+			position.y += 16
+		if Input.is_action_pressed("player_jump"):
+			position.y -= 16
+		if Input.is_action_pressed("player_right"):
+			position.x += 16
+		if Input.is_action_pressed("player_left"):
+			position.x -= 16
+			
+	if Input.is_action_pressed("player_jump") and is_on_floor() and not Global.god_mode:
 		velocity.y = JUMP_VELOCITY
 		Global.current_player_state = "jumping"
 		
 	var right = Input.is_action_pressed("player_right")
 	var left = Input.is_action_pressed("player_left")
-	
 	
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		Global.current_player_state = "mining"

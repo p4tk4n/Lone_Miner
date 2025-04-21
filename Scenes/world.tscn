@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://cxr86sg4g3e5x"]
+[gd_scene load_steps=22 format=3 uid="uid://cxr86sg4g3e5x"]
 
 [ext_resource type="PackedScene" uid="uid://devp6n8h28ea0" path="res://Scenes/player.tscn" id="1_gvcvq"]
 [ext_resource type="Script" path="res://Scripts/world.gd" id="1_udlst"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://cv0lttmfqrptk" path="res://Resources/Sprites/tutorial_2.png" id="7_x27vv"]
 [ext_resource type="Shader" path="res://Shaders/vignette.gdshader" id="8_pyyns"]
 [ext_resource type="PackedScene" uid="uid://dmld02v1yqfvx" path="res://Scenes/console_manager.tscn" id="9_2onaj"]
+[ext_resource type="PackedScene" uid="uid://ca1b0helc4yy" path="res://Scenes/load_and_save_manager.tscn" id="10_bljwa"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ixs4e"]
 noise_type = 3
@@ -57,11 +58,9 @@ noise_height_texture_ruby = SubResource("NoiseTexture2D_gnsoj")
 [node name="MiningTimer" type="Timer" parent="."]
 wait_time = 0.125
 
-[node name="TileMap" type="TileMap" parent="."]
+[node name="TileMap" type="TileMap" parent="." groups=["map"]]
 tile_set = ExtResource("3_dl2li")
 format = 2
-
-[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="TileMap"]
 
 [node name="player" parent="." instance=ExtResource("1_gvcvq")]
 
@@ -131,3 +130,6 @@ size_flags_horizontal = 4
 
 [node name="ConsoleManager" parent="hotbar" node_paths=PackedStringArray("player") instance=ExtResource("9_2onaj")]
 player = NodePath("../../player")
+
+[node name="LoadAndSaveManager" parent="." node_paths=PackedStringArray("tilemap") instance=ExtResource("10_bljwa")]
+tilemap = NodePath("../TileMap")
