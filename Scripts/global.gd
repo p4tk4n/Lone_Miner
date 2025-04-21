@@ -4,7 +4,7 @@ var WIDTH := 400
 var HEIGHT := 400
 
 var player_can_mine = false
-var delay_inbetween_mining = 0.125
+var delay_inbetween_mining = 0.12
 
 var player_inventory_open = true
 var player : Node = null
@@ -20,8 +20,8 @@ var default_inventory_size = 10
 
 var item_textures: Dictionary = {
 	"coal": preload("res://Resources/Sprites/coal_item.png"),
-	"stone": preload("res://Resources/Sprites/stone_item.png"),
 	"iron": preload("res://Resources/Sprites/iron_item.png"),
+	"stone": preload("res://Resources/Sprites/stone_item.png"),
 	"ruby": preload("res://Resources/Sprites/ruby_item.png")
 }
 

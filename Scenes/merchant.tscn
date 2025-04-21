@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3 uid="uid://ouydd0tue512"]
+
+[ext_resource type="Texture2D" uid="uid://ckbkjkkgh5hs8" path="res://Resources/Sprites/merchant.png" id="1_qxmeh"]
+[ext_resource type="Script" path="res://Scripts/merchant.gd" id="1_tramn"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ojwbk"]
+friction = 0.5
+absorbent = true
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8kiro"]
+size = Vector2(18, 18)
+
+[node name="merchant" type="RigidBody2D"]
+disable_mode = 2
+physics_material_override = SubResource("PhysicsMaterial_ojwbk")
+lock_rotation = true
+script = ExtResource("1_tramn")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_qxmeh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -1)
+shape = SubResource("RectangleShape2D_8kiro")

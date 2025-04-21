@@ -61,5 +61,6 @@ Version Alpha.5
 -the terrain generates in a sine-like wave
 -changed the texture of the ruby to a rounder texture, kept the pallete the same
 -i got a idea! heureka! i want to add a console for debugging!!! > let me do this quik
-
+-i implemented the console yipieee, it has these commands: give (item), clear (item), teleport (pos)
+-currently im working on the summon command 
 

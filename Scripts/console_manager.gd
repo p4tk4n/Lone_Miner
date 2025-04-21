@@ -24,7 +24,6 @@ func give_item_to_player(item_type: String, item_quantity: String):
 		"item_texture" : Global.item_textures[item_type],
 		"texture_id" : texture_id
 		}
-	print(item)
 	Global.add_item(item)
 
 func clear_item_from_player(item_to_remove):
@@ -36,7 +35,6 @@ func teleport_player(x,y):
 	
 func readCommands(input: String):
 	var tokens = (input.trim_prefix("/")).split(" ")
-	print(tokens)
 	var main_command: String = tokens[0]
 	if main_command in valid_commands:
 		if main_command == valid_commands[0]:
@@ -81,15 +79,16 @@ func _process(_delta):
 		readCommands(text_from_console)
 		console.clear()
 		nth_command = 0
+		console.visible = false
 	
 	if Input.is_action_just_pressed("show_last_command") and console.visible and command_history.size() > 0:
-		# Decrease nth_command to show the previous command in the history
+		# znizi nth_command aby ukazal posledny cmd
 		if nth_command > -command_history.size():
 			nth_command -= 1
 		console.text = command_history[nth_command]
 		
 	if Input.is_action_just_pressed("show_prev_command") and console.visible and command_history.size() > 0:
-		# Increase nth_command to show the next command in the history
+		# zvysi nth_command aby ukazal predosly cmd
 		if nth_command < -1:
 			nth_command += 1
 		console.text = command_history[nth_command]

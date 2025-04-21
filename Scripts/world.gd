@@ -11,9 +11,11 @@ var world_seed = randi()
 @onready var mining_timer = $MiningTimer
 @onready var player_inventory = $hotbar/InventoryNode
 @onready var tutorial_ui = $player/Tutorial
+@onready var player = $player
 
 @onready var mining_particle = preload("res://Scenes/mining_particle.tscn")
 @onready var item = preload("res://Scenes/item.tscn")
+@onready var merchant_scene = preload("res://Scenes/merchant.tscn")
 
 var coal_texture = Global.item_textures["coal"]
 var iron_texture = Global.item_textures["iron"]
@@ -104,7 +106,8 @@ func wave_terrain():
 	
 	var a: float = 0
 	var b: float = 0
-	
+	var a_increase = 0.081
+	var b_increase = 0.045
 	var block_type: int = 0
 	
 	for x in range(left, right):
@@ -133,8 +136,8 @@ func wave_terrain():
 					tilemap.set_cell(0, Vector2i(x, y-40), 5, Vector2i(3, 0))
 				_:
 					tilemap.set_cell(0, Vector2i(x, y-40), 5, Vector2i(2, 0))
-		a += 0.081
-		b += 0.045
+		a += a_increase
+		b += b_increase
 	
 func _generate_world():
 	# Main terrain generation
@@ -156,6 +159,7 @@ func _generate_world():
 	generate_ore(noise_iron,0.49,2,Vector2i(1,0),stone_tiles)
 	generate_ore(noise_ruby,0.69,4,Vector2i(1,0),stone_tiles)
 	wave_terrain()
+	spawn_merchant()
 	
 func generate_ore(noise: Noise, threshold: float, source_id: int, _atlas_coords: Vector2i, valid_tiles: Array):
 	for x in range(-width / 2.0, width / 2.0):
@@ -172,6 +176,11 @@ func generate_ore(noise: Noise, threshold: float, source_id: int, _atlas_coords:
 				if tile_below in valid_tiles:
 					tilemap.set_cell(0, tile_pos, source_id, tile_below)  # Set ore tile
 
+func spawn_merchant():
+	var merchant_instance = merchant_scene.instantiate()
+	merchant_instance.position = player.position
+	add_child(merchant_instance)
+	
 func spawn_drop(pos, quantity, item_type, item_name, texture):
 	var drop_instance = item.instantiate()
 	drop_instance.position = pos + Vector2(0, -5)  # Slightly above ground
@@ -224,7 +233,7 @@ func mine():
 		var new_tile_coords = Vector2i(atlas_coords.x, atlas_coords.y + 1)
 		tilemap.set_cell(0, tile_pos, source_id, new_tile_coords)  # Keep source ID the same
 		
-	elif atlas_coords.y == 3:
+	elif atlas_coords.y == 3: #block destroyed
 		AudioManager.play_random_pitch(AudioManager.mining_block,0.7,1.1)
 		if source_id == 0 or source_id == 3:
 			spawn_drop(Vector2(tilemap.map_to_local(tile_pos)),1,"stone","Stone",stone_texture)
@@ -248,6 +257,7 @@ func _on_mining_timer_timeout():
 	
 func _unhandled_input(_event):
 	if Input.is_action_just_pressed("ui_cancel"):
+		player_inventory.visible = false
 		FadingEffect.transition()
 		await FadingEffect.on_transition_finished
 		get_tree().change_scene_to_file("res://Scenes/main_menu.tscn")
