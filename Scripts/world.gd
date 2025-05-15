@@ -23,7 +23,7 @@ var iron_texture = Global.item_textures["iron"]
 var stone_texture = Global.item_textures["stone"]
 var ruby_texture = Global.item_textures["ruby"]
 
-var buildable_blocks = ["Stone"]
+var buildable_blocks = ["stone"]
 
 var noise0 : Noise 
 var noise1 : Noise 
@@ -37,9 +37,8 @@ var width : int = Global.WIDTH
 var height : int = Global.HEIGHT
 
 #chunking system
-var CHUNK_SIZE = Global.CHUNK_SIZE
+var chunk_size = Global.chunk_size
 var loaded_chunks = {}
-var modified_tiles = {}
 var CHUNK_LOAD_RADIUS = Global.render_distance  # Load chunks 2 units beyond visible area
 var last_player_chunk = Vector2i(0, 0)
 var world_top = Global.top_of_the_world #<-here am i
@@ -68,27 +67,20 @@ func _ready():
 	
 	mining_timer.timeout.connect(_on_mining_timer_timeout)
 	#_generate_world()
-	force_update_chunks_around_player()
+	var start_chunk = Vector2i(
+		floori(player.position.x / (chunk_size * tilemap.tile_set.tile_size.x)),
+		floori(player.position.y / (chunk_size * tilemap.tile_set.tile_size.y))
+	)
+	update_active_chunks(start_chunk)
 	$Effects/vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	player_inventory.visible = true			
 	Global.god_mode = false
-	
 
-
-
+func _notification(what):
+	if what == NOTIFICATION_PREDELETE:
+		ChunkManager.save_all_active_chunks()
 
 ###############Chunking################
-
-
-
-func force_update_chunks_around_player():
-	var player_tile_pos = tilemap.local_to_map(player.position)
-	var current_chunk = Vector2i(
-		floori(player_tile_pos.x / float(CHUNK_SIZE)),
-		floori(player_tile_pos.y / float(CHUNK_SIZE))
-	)
-	update_active_chunks(current_chunk)
-
 func update_active_chunks(center_chunk: Vector2i):
 	# Only update if player moved to new chunk
 	if center_chunk == last_player_chunk:
@@ -103,20 +95,29 @@ func update_active_chunks(center_chunk: Vector2i):
 				generate_chunk(x, y)
 				loaded_chunks[chunk_pos] = true
 
+func _apply_saved_modifications(modifications: Dictionary, chunk_start_x: int, chunk_start_y: int):
+	for local_pos in modifications:
+		var world_pos = Vector2(
+			chunk_start_x + local_pos.x,
+			chunk_start_y + local_pos.y
+		)	
+		var tile_id = modifications[local_pos]
+		if tile_id == -1:
+			tilemap.erase_cell(0, world_pos)
+		else:
+			tilemap.set_cell(0, world_pos, tile_id, Vector2i(0,0))
+		
 func generate_chunk(chunk_x: int, chunk_y: int):
-	var start_x = chunk_x * CHUNK_SIZE
-	var start_y = chunk_y * CHUNK_SIZE
-	var end_x = start_x + CHUNK_SIZE
-	var end_y = start_y + CHUNK_SIZE
+	var start_x = chunk_x * chunk_size
+	var start_y = chunk_y * chunk_size
+	var end_x = start_x + chunk_size
+	var end_y = start_y + chunk_size
 	
-	# First try to load existing chunk
-	if loadAndSaveManager.load_chunk(chunk_x, chunk_y):
-		print("Loaded existing chunk ", chunk_x, ",", chunk_y)
-		return  # Chunk was successfully loaded
-	
-	# Otherwise generate new chunk
-	print("Generating new chunk ", chunk_x, ",", chunk_y)
-	
+	var modifications = ChunkManager.get_chunk_modifications(Vector2(chunk_x,chunk_y))
+	if modifications.size() > 0:
+		_apply_saved_modifications(modifications, start_x,start_y)
+		return
+		
 	# Only generate surface terrain if above cave start level
 	if start_y <= world_top:
 		wave_terrain(chunk_x, chunk_y)
@@ -146,37 +147,20 @@ func generate_chunk(chunk_x: int, chunk_y: int):
 		generate_ore(noise_iron, 0.49, 2, Vector2i(1,0), stone_tiles, chunk_x, chunk_y)
 		generate_ore(noise_ruby, 0.69, 4, Vector2i(1,0), stone_tiles, chunk_x, chunk_y)
 		
-func unload_distant_chunks():
-	var player_tile_pos = tilemap.local_to_map(player.position)
-	var player_chunk = Vector2i(
-		floori(player_tile_pos.x / float(CHUNK_SIZE)),
-		floori(player_tile_pos.y / float(CHUNK_SIZE))
-	)
-	
-	var chunks_to_unload = []
-	for chunk in loaded_chunks:
-		if abs(chunk.x - player_chunk.x) > CHUNK_LOAD_RADIUS + 1 or \
-		   abs(chunk.y - player_chunk.y) > CHUNK_LOAD_RADIUS + 1:
-			chunks_to_unload.append(chunk)
-	
-	for chunk in chunks_to_unload:
-		
-		print("saving chunk")
-		loadAndSaveManager.save_chunk(chunk.x, chunk.y,modified_tiles)
-		loaded_chunks.erase(chunk)
-		# Optional: Clear tiles in this chunk to save memory
-		# clear_chunk_tiles(chunk.x, chunk.y)
-
-
-
-
+#func unload_distant_chunks():
+	#var player_tile_pos = tilemap.local_to_map(player.position)
+	#var player_chunk = Vector2i(
+		#floori(player_tile_pos.x / float(chunk_size)),
+		#floori(player_tile_pos.y / float(chunk_size))
+	#)
+	#
+	#var chunks_to_unload = []
+	#for chunk in loaded_chunks:
+		#if abs(chunk.x - player_chunk.x) > CHUNK_LOAD_RADIUS + 1 or \
+		   #abs(chunk.y - player_chunk.y) > CHUNK_LOAD_RADIUS + 1:
+			#chunks_to_unload.append(chunk)
 
 ##########################WORLD GENERATION##########################
-
-
-
-
-
 #values: [min,max,[layer,source_id,[atlas_x,atlas_y]]]
 func noise_to_tiles(input_noise, lists, start_x, end_x, start_y, end_y):
 	for x in range(start_x,end_x):
@@ -213,19 +197,18 @@ func noise_to_tiles(input_noise, lists, start_x, end_x, start_y, end_y):
 						)
 
 func generate_bedrock_layer(chunk_x: int, chunk_y: int):
-	var start_x = chunk_x * CHUNK_SIZE
-	var start_y = chunk_y * CHUNK_SIZE
-	var end_x = start_x + CHUNK_SIZE
-	var end_y = start_y + CHUNK_SIZE
+	var start_x = chunk_x * chunk_size
+	var start_y = chunk_y * chunk_size
+	var end_x = start_x + chunk_size
+	var end_y = start_y + chunk_size
 	
 	for x in range(start_x, end_x):
 		for y in range(start_y, end_y):
 			tilemap.set_cell(0, Vector2i(x, y), 0, Vector2i(6, 0))  # Solid bedrock
 
-
 func wave_terrain(chunk_x: int, chunk_y: int):
-	var left: int = chunk_x * CHUNK_SIZE
-	var right: int = left + CHUNK_SIZE
+	var left: int = chunk_x * chunk_size
+	var right: int = left + chunk_size
 	
 	var a: float = 0.081 * left
 	var b: float = 0.045 * left
@@ -278,10 +261,10 @@ func wave_terrain(chunk_x: int, chunk_y: int):
 	##spawn_merchant()
 	
 func generate_ore(noise: Noise, threshold: float, source_id: int, _atlas_coords: Vector2i, valid_tiles: Array, chunk_x: int, chunk_y: int):
-	var start_x = chunk_x * CHUNK_SIZE #- width / 2.0
-	var end_x = start_x + CHUNK_SIZE
-	var start_y = chunk_y * CHUNK_SIZE #- height / 2.0
-	var end_y = start_y + CHUNK_SIZE
+	var start_x = chunk_x * chunk_size #- width / 2.0
+	var end_x = start_x + chunk_size
+	var start_y = chunk_y * chunk_size #- height / 2.0
+	var end_y = start_y + chunk_size
 	print("ores")
 	for x in range(start_x, end_x):
 		for y in range(start_y, end_y):
@@ -333,23 +316,12 @@ func place():
 	var tile_pos = get_tile_under_mouse()
 	var current_block = Global.inventory[player_inventory.hovered_index]
 	
-	if current_block and current_block["item_name"] in buildable_blocks:
+	if current_block and current_block["item_type"] in buildable_blocks:
 		var chunk_pos = Vector2i(
-			floori(tile_pos.x / float(CHUNK_SIZE)),
-			floori(tile_pos.y / float(CHUNK_SIZE))
+			floori(tile_pos.x / float(chunk_size)),
+			floori(tile_pos.y / float(chunk_size))
 		)
-		var chunk_key = str(chunk_pos.x) + "_" + str(chunk_pos.y)
-		
-		if not modified_tiles.has(chunk_key):
-			modified_tiles[chunk_key] = []
-			print("Created new entry for chunk ", chunk_key)
-		
-		modified_tiles[chunk_key].append({
-			"position": {"x": tile_pos.x, "y": tile_pos.y},
-			"source_id": 3,
-			"atlas_coords": {"x": 1, "y": 0}
-		})
-		print("Added placement to modified_tiles: ", modified_tiles[chunk_key][-1])
+		ChunkManager.record_block_modification(tile_pos,3)
 		
 		tilemap.set_cell(0, tile_pos, 3, Vector2i(1, 0))
 		current_block["quantity"] -= 1
@@ -361,24 +333,13 @@ func mine():
 	var atlas_coords = tilemap.get_cell_atlas_coords(0, tile_pos)  # Get the tile atlas coordinates
 	var particle_instance : CPUParticles2D = mining_particle.instantiate()
 	
-	if source_id == -1:
-		return
+	if source_id == -1: return
 	
 	var chunk_pos = Vector2i(
-		floori(tile_pos.x / float(CHUNK_SIZE)),
-		floori(tile_pos.y / float(CHUNK_SIZE))
+		floori(tile_pos.x / float(chunk_size)),
+		floori(tile_pos.y / float(chunk_size))
 	)
-	var chunk_key = str(chunk_pos.x) + "_" + str(chunk_pos.y)
 	
-	if not modified_tiles.has(chunk_key):
-		modified_tiles[chunk_key] = []
-	
-	modified_tiles[chunk_key].append({
-		"position": {"x": tile_pos.x, "y": tile_pos.y},  # Store as dictionary
-		"source_id": -1,  # -1 means tile was removed
-		"atlas_coords": {"x": -1, "y": -1}  # Store as dictionary
-	})
-
 	# Modify or erase the tile based on its type
 	if atlas_coords and atlas_coords.y < 3:
 		particle_instance.position = Vector2(tilemap.map_to_local(tile_pos))
@@ -401,21 +362,15 @@ func mine():
 		
 		elif source_id == 4:
 			spawn_drop(Vector2(tilemap.map_to_local(tile_pos)),1,"ruby","Ruby",ruby_texture)
-		
+		ChunkManager.record_block_modification(tile_pos, -1)
 		tilemap.erase_cell(0, tile_pos)  # Remove the tile
 
-
 ##############SIGNALS######################
-
-
-	
 func _on_mining_timer_timeout():
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and Global.player_can_mine:
 		mine()
 		Global.current_player_state = "mining"
 		mining_timer.start(Global.delay_inbetween_mining)
-
-
 
 ##########Input and events#######################
 
@@ -461,11 +416,11 @@ func _process(_delta):
 	# Update chunks based on player position instead of camera
 	var player_tile_pos = tilemap.local_to_map(player.position)
 	var current_chunk = Vector2i(
-		floori(player_tile_pos.x / float(CHUNK_SIZE)),
-		floori(player_tile_pos.y / float(CHUNK_SIZE))
+		floori(player_tile_pos.x / float(chunk_size)),
+		floori(player_tile_pos.y / float(chunk_size))
 	)
 	update_active_chunks(current_chunk)
-	unload_distant_chunks()
+	#unload_distant_chunks()
 	if Global.did_mine and Global.did_scroll and Global.did_tab:
 		tutorial_ui.visible = false
 	queue_redraw()

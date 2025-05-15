@@ -20,7 +20,7 @@ var default_inventory_size = 10
 
 var god_mode = false
 
-var CHUNK_SIZE = 16
+var chunk_size = 16
 var render_distance = 3
 var top_of_the_world = 0
 var cave_start = 20

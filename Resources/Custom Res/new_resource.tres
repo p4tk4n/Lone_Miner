@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ChunkData" load_steps=2 format=3 uid="uid://d22hs11wskjk3"]
+
+[ext_resource type="Script" uid="uid://bwdqk63pkuf4n" path="res://Scripts/chunk_data.gd" id="1_cev01"]
+
+[resource]
+script = ExtResource("1_cev01")
+chunk_position = Vector2(0, 0)
+modified_blocks = {}
+last_modified = 0
+metadata/_custom_type_script = "uid://bwdqk63pkuf4n"

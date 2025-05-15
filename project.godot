@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 Global="*res://Scripts/global.gd"
 AudioManager="*res://Scenes/audio_manager.tscn"
 FadingEffect="*res://Scenes/fading_effect.tscn"
+ChunkManager="*res://Scripts/chunk_manager.gd"
 
 [display]
 
