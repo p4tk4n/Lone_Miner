@@ -100,4 +100,3 @@ func _on_text_input_text_changed(new_text: String):
 	if not new_text.begins_with("/"):
 		console.text = "/" + new_text.strip_edges(true,false)
 		console.caret_column = console.text.length()
-

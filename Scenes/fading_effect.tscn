@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://b33njloig2gb0"]
 
-[ext_resource type="Script" path="res://Scripts/fadingEffect.gd" id="1_kpj7h"]
+[ext_resource type="Script" uid="uid://dmmm0wx0h22kg" path="res://Scripts/fadingEffect.gd" id="1_kpj7h"]
 
 [sub_resource type="Animation" id="Animation_sadwq"]
 length = 0.001
@@ -51,9 +51,9 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_k12ao"]
 _data = {
-"RESET": SubResource("Animation_sadwq"),
-"fade_to_black": SubResource("Animation_4irbg"),
-"fade_to_normal": SubResource("Animation_02ydh")
+&"RESET": SubResource("Animation_sadwq"),
+&"fade_to_black": SubResource("Animation_4irbg"),
+&"fade_to_normal": SubResource("Animation_02ydh")
 }
 
 [node name="fadingEffect" type="CanvasLayer"]

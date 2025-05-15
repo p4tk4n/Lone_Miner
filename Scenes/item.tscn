@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://cqyoahbeqgn64"]
 
 [ext_resource type="Texture2D" uid="uid://dtn2h38lsxfyv" path="res://Resources/Sprites/coal_item.png" id="1_6o2xr"]
-[ext_resource type="Script" path="res://Scripts/item.gd" id="1_kblxi"]
+[ext_resource type="Script" uid="uid://b0i02dw1ermrn" path="res://Scripts/item.gd" id="1_kblxi"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_3xsf5"]
 friction = 0.6
@@ -18,7 +18,7 @@ radius = 4.0
 mass = 0.5
 physics_material_override = SubResource("PhysicsMaterial_3xsf5")
 gravity_scale = 1.1
-linear_velocity = Vector2(-18.3684, -3.10875)
+linear_velocity = Vector2(47.7328, 18.6431)
 angular_damp = 40.013
 script = ExtResource("1_kblxi")
 item_texture = ExtResource("1_6o2xr")

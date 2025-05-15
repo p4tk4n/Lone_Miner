@@ -71,7 +71,8 @@ func _ready():
 	force_update_chunks_around_player()
 	$Effects/vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	player_inventory.visible = true			
-
+	Global.god_mode = false
+	
 
 
 
@@ -108,6 +109,14 @@ func generate_chunk(chunk_x: int, chunk_y: int):
 	var end_x = start_x + CHUNK_SIZE
 	var end_y = start_y + CHUNK_SIZE
 	
+	# First try to load existing chunk
+	if loadAndSaveManager.load_chunk(chunk_x, chunk_y):
+		print("Loaded existing chunk ", chunk_x, ",", chunk_y)
+		return  # Chunk was successfully loaded
+	
+	# Otherwise generate new chunk
+	print("Generating new chunk ", chunk_x, ",", chunk_y)
+	
 	# Only generate surface terrain if above cave start level
 	if start_y <= world_top:
 		wave_terrain(chunk_x, chunk_y)
@@ -136,7 +145,7 @@ func generate_chunk(chunk_x: int, chunk_y: int):
 		generate_ore(noise_coal, 0.4, 1, Vector2i(1,0), stone_tiles, chunk_x, chunk_y)
 		generate_ore(noise_iron, 0.49, 2, Vector2i(1,0), stone_tiles, chunk_x, chunk_y)
 		generate_ore(noise_ruby, 0.69, 4, Vector2i(1,0), stone_tiles, chunk_x, chunk_y)
-
+		
 func unload_distant_chunks():
 	var player_tile_pos = tilemap.local_to_map(player.position)
 	var player_chunk = Vector2i(
@@ -151,6 +160,8 @@ func unload_distant_chunks():
 			chunks_to_unload.append(chunk)
 	
 	for chunk in chunks_to_unload:
+		
+		print("saving chunk")
 		loadAndSaveManager.save_chunk(chunk.x, chunk.y,modified_tiles)
 		loaded_chunks.erase(chunk)
 		# Optional: Clear tiles in this chunk to save memory
@@ -321,51 +332,52 @@ func get_tile_under_mouse():
 func place():
 	var tile_pos = get_tile_under_mouse()
 	var current_block = Global.inventory[player_inventory.hovered_index]
-	var chunk_pos = Vector2i(
-		floori(tile_pos.x / float(CHUNK_SIZE)),
-		floori(tile_pos.y / float(CHUNK_SIZE))
+	
+	if current_block and current_block["item_name"] in buildable_blocks:
+		var chunk_pos = Vector2i(
+			floori(tile_pos.x / float(CHUNK_SIZE)),
+			floori(tile_pos.y / float(CHUNK_SIZE))
 		)
-	
-	var chunk_key = str(chunk_pos.x) + "_" + str(chunk_pos.y)
-	if not modified_tiles.has(chunk_key):
-		modified_tiles[chunk_key] = []
-	modified_tiles[chunk_key].append({
-		"position": tile_pos,
-		"source_id": 3,  # Stone block
-		"atlas_coords": Vector2i(1, 0)
-	})
-	
-	var current_tile = tilemap.get_cell_source_id(0, tile_pos)
-	
-	if current_tile == -1 and current_block and current_block["item_name"] in buildable_blocks:
-		tilemap.set_cell(0,tile_pos,3,Vector2i(1,0))
+		var chunk_key = str(chunk_pos.x) + "_" + str(chunk_pos.y)
+		
+		if not modified_tiles.has(chunk_key):
+			modified_tiles[chunk_key] = []
+			print("Created new entry for chunk ", chunk_key)
+		
+		modified_tiles[chunk_key].append({
+			"position": {"x": tile_pos.x, "y": tile_pos.y},
+			"source_id": 3,
+			"atlas_coords": {"x": 1, "y": 0}
+		})
+		print("Added placement to modified_tiles: ", modified_tiles[chunk_key][-1])
+		
+		tilemap.set_cell(0, tile_pos, 3, Vector2i(1, 0))
 		current_block["quantity"] -= 1
 		Global.inventory_updated.emit()
 		
 func mine():
 	var tile_pos = get_tile_under_mouse()
+	var source_id = tilemap.get_cell_source_id(0, tile_pos)
+	var atlas_coords = tilemap.get_cell_atlas_coords(0, tile_pos)  # Get the tile atlas coordinates
+	var particle_instance : CPUParticles2D = mining_particle.instantiate()
+	
+	if source_id == -1:
+		return
+	
 	var chunk_pos = Vector2i(
 		floori(tile_pos.x / float(CHUNK_SIZE)),
 		floori(tile_pos.y / float(CHUNK_SIZE))
 	)
-	
 	var chunk_key = str(chunk_pos.x) + "_" + str(chunk_pos.y)
+	
 	if not modified_tiles.has(chunk_key):
 		modified_tiles[chunk_key] = []
+	
 	modified_tiles[chunk_key].append({
-		"position": tile_pos,
+		"position": {"x": tile_pos.x, "y": tile_pos.y},  # Store as dictionary
 		"source_id": -1,  # -1 means tile was removed
-		"atlas_coords": Vector2i(-1, -1)
+		"atlas_coords": {"x": -1, "y": -1}  # Store as dictionary
 	})
-	
-	var source_id = tilemap.get_cell_source_id(0, tile_pos)  # Get the tile source ID
-	var atlas_coords = tilemap.get_cell_atlas_coords(0, tile_pos)  # Get the tile atlas coordinates
-	var particle_instance : CPUParticles2D = mining_particle.instantiate()
-	
-	
-	
-	if source_id == -1:
-		return  # No tile here, do nothing
 
 	# Modify or erase the tile based on its type
 	if atlas_coords and atlas_coords.y < 3:
@@ -420,8 +432,9 @@ func _unhandled_input(_event):
 	if !Global.god_mode:
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and Global.player_can_mine and mining_timer.is_stopped():
 			mine() 
+			mining_timer.start(Global.delay_inbetween_mining)
 	else:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and Global.god_mode:
 			mine()
 		
 		mining_timer.start(Global.delay_inbetween_mining)
@@ -452,7 +465,7 @@ func _process(_delta):
 		floori(player_tile_pos.y / float(CHUNK_SIZE))
 	)
 	update_active_chunks(current_chunk)
-	
+	unload_distant_chunks()
 	if Global.did_mine and Global.did_scroll and Global.did_tab:
 		tutorial_ui.visible = false
 	queue_redraw()

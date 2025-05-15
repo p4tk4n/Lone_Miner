@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dmld02v1yqfvx"]
 
-[ext_resource type="Script" path="res://Scripts/console_manager.gd" id="1_nke8d"]
+[ext_resource type="Script" uid="uid://cyqi61424aoam" path="res://Scripts/console_manager.gd" id="1_nke8d"]
 
 [sub_resource type="SystemFont" id="SystemFont_pk6r5"]
 generate_mipmaps = true

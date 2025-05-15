@@ -64,3 +64,10 @@ Version Alpha.5
 -i implemented the console yipieee, it has these commands: give (item), clear (item), teleport (pos)
 -currently im working on the summon command 
 
+Version Alpha.6
+-the world "generates" in chunks
+-a few chunks around the player are always loaded, new ones load in a radius when a player moves
+-chunks that are too far are removed from the loaded_chunks array
+-"bedrock" generates at y 400 - the new bottom of the world
+-at the top of the world at y 0 wavy, hill like terrain generates (mentioned and implemented earlier but now its working with the chunking system)
+-modified chunks are saved into a modified_chunks array.

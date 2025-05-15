@@ -1,8 +1,9 @@
 [gd_scene load_steps=4 format=3 uid="uid://ck84y5s6uxpvk"]
 
-[ext_resource type="Script" path="res://Scripts/inventory_item.gd" id="1_0uagh"]
+[ext_resource type="Script" uid="uid://dgpu3rsaxnpup" path="res://Scripts/inventory_item.gd" id="1_0uagh"]
 
 [sub_resource type="SystemFont" id="SystemFont_jsh7x"]
+subpixel_positioning = 0
 
 [sub_resource type="LabelSettings" id="LabelSettings_opp4i"]
 font = SubResource("SystemFont_jsh7x")

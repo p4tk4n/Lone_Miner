@@ -1,6 +1,6 @@
 [gd_scene load_steps=13 format=3 uid="uid://devp6n8h28ea0"]
 
-[ext_resource type="Script" path="res://Scripts/player.gd" id="1_4nvwc"]
+[ext_resource type="Script" uid="uid://b1lp6c353nwdg" path="res://Scripts/player.gd" id="1_4nvwc"]
 [ext_resource type="Texture2D" uid="uid://uu0gyrxd34da" path="res://Resources/Sprites/player_atlas.png" id="2_81b03"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xn8oq"]
@@ -90,10 +90,10 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_gfckm"]
 _data = {
-"RESET": SubResource("Animation_n2ty4"),
-"idle": SubResource("Animation_u267m"),
-"mining": SubResource("Animation_x032l"),
-"walking": SubResource("Animation_lkh85")
+&"RESET": SubResource("Animation_n2ty4"),
+&"idle": SubResource("Animation_u267m"),
+&"mining": SubResource("Animation_x032l"),
+&"walking": SubResource("Animation_lkh85")
 }
 
 [sub_resource type="Gradient" id="Gradient_04rky"]
@@ -134,7 +134,7 @@ shape = SubResource("RectangleShape2D_tkmgd")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_gfckm")
+&"": SubResource("AnimationLibrary_gfckm")
 }
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

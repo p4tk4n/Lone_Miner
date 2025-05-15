@@ -1,13 +1,13 @@
 [gd_scene load_steps=22 format=3 uid="uid://cxr86sg4g3e5x"]
 
 [ext_resource type="PackedScene" uid="uid://devp6n8h28ea0" path="res://Scenes/player.tscn" id="1_gvcvq"]
-[ext_resource type="Script" path="res://Scripts/world.gd" id="1_udlst"]
+[ext_resource type="Script" uid="uid://brvcrgbaj6jrp" path="res://Scripts/world.gd" id="1_udlst"]
 [ext_resource type="TileSet" uid="uid://badac5i65sojv" path="res://Resources/Data/main_tileset.tres" id="3_dl2li"]
 [ext_resource type="Texture2D" uid="uid://cbykehsxu83po" path="res://Resources/Sprites/tutorial_0.png" id="5_lv2ht"]
 [ext_resource type="Texture2D" uid="uid://duuokoss6kvog" path="res://Resources/Sprites/tutorial_1.png" id="6_akfma"]
 [ext_resource type="PackedScene" uid="uid://b0ptav00g46sy" path="res://Scenes/inventory_node.tscn" id="7_cfqdv"]
 [ext_resource type="Texture2D" uid="uid://cv0lttmfqrptk" path="res://Resources/Sprites/tutorial_2.png" id="7_x27vv"]
-[ext_resource type="Shader" path="res://Shaders/vignette.gdshader" id="8_pyyns"]
+[ext_resource type="Shader" uid="uid://c207w1lk7t544" path="res://Shaders/vignette.gdshader" id="8_pyyns"]
 [ext_resource type="PackedScene" uid="uid://dmld02v1yqfvx" path="res://Scenes/console_manager.tscn" id="9_2onaj"]
 [ext_resource type="PackedScene" uid="uid://ca1b0helc4yy" path="res://Scenes/load_and_save_manager.tscn" id="10_bljwa"]
 

@@ -20,7 +20,7 @@ func move_light(dist):
 	if menu_light.position.x <= 720:
 		menu_light.position.x += dist
 	elif menu_light.position.x > 480:
-		print("dosiel som na koniec")
+		#print("dosiel som na koniec")
 		menu_light.position.x = -196
 
 func _process(_delta):
