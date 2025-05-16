@@ -1,6 +1,6 @@
 extends Node2D
 
-var world_seed = randi()
+var world_seed = Global.current_seed
 @export var noise_height_texture0 : NoiseTexture2D
 @export var noise_height_texture1 : NoiseTexture2D
 @export var noise_height_texture_coal : NoiseTexture2D
@@ -103,21 +103,14 @@ func _apply_saved_modifications(modifications: Dictionary, chunk_start_x: int, c
 		)
 		var tile_data = modifications[local_pos]
 		
-		# Handle both old (int) and new (dict) formats
-		if tile_data is Dictionary:  # New format
-			if tile_data.has("id"):
-				var tile_id = tile_data["id"]
-				if tile_id == -1:
-					tilemap.erase_cell(0, world_pos)
-				else:
-					var atlas_coords = tile_data.get("atlas", Vector2i(0, 0))
-					tilemap.set_cell(0, world_pos, tile_id, atlas_coords)
-		else:  # Legacy format (just tile_id)
-			if tile_data == -1:
+		if tile_data is Dictionary:
+			if tile_data["id"] == -1:
 				tilemap.erase_cell(0, world_pos)
 			else:
-				tilemap.set_cell(0, world_pos, tile_data, _get_default_atlas_coords(tile_data))
-
+				tilemap.set_cell(0, world_pos, 
+					tile_data["id"], 
+					tile_data.get("atlas", Vector2i(0, 0)))
+					
 # Helper to get proper visual variants
 func _get_default_atlas_coords(tile_id: int) -> Vector2i:
 	match tile_id:
@@ -127,28 +120,12 @@ func _get_default_atlas_coords(tile_id: int) -> Vector2i:
 		3: return Vector2i(1, 0)  # Placed stone
 		4: return Vector2i(1, 0)  # Ruby
 		_: return Vector2i(0, 0)
-		
-func generate_chunk(chunk_x: int, chunk_y: int):
+
+func generate_caves(chunk_x,chunk_y):
 	var start_x = chunk_x * chunk_size
 	var start_y = chunk_y * chunk_size
 	var end_x = start_x + chunk_size
 	var end_y = start_y + chunk_size
-	
-	var modifications = ChunkManager.get_chunk_modifications(Vector2(chunk_x,chunk_y))
-	if modifications.size() > 0:
-		_apply_saved_modifications(modifications, start_x,start_y)
-		return
-		
-	# Only generate surface terrain if above cave start level
-	if start_y <= world_top:
-		wave_terrain(chunk_x, chunk_y)
-		return
-	
-	# Generate bedrock layer at bottom
-	if start_y >= bedrock_level:
-		generate_bedrock_layer(chunk_x, chunk_y)
-		return
-	
 	# Regular cave generation for underground areas
 	noise_to_tiles(noise1, [
 		[-0.1, 0.0, [0, 0, [5, 0]]],
@@ -168,6 +145,29 @@ func generate_chunk(chunk_x: int, chunk_y: int):
 		generate_ore(noise_iron, 0.49, 2, Vector2i(1,0), stone_tiles, chunk_x, chunk_y)
 		generate_ore(noise_ruby, 0.69, 4, Vector2i(1,0), stone_tiles, chunk_x, chunk_y)
 		
+func generate_chunk(chunk_x: int, chunk_y: int):
+	var start_x = chunk_x * chunk_size
+	var start_y = chunk_y * chunk_size
+	var end_x = start_x + chunk_size
+	var end_y = start_y + chunk_size
+		
+	# Only generate surface terrain if above cave start level
+	if start_y <= world_top:
+		wave_terrain(chunk_x, chunk_y)
+		return
+	
+	# Generate bedrock layer at bottom
+	if start_y >= bedrock_level:
+		generate_bedrock_layer(chunk_x, chunk_y)
+		return
+	
+	else:
+		generate_caves(chunk_x,chunk_y)
+	
+	var modifications = ChunkManager.get_chunk_modifications(Vector2(chunk_x,chunk_y))
+	if modifications.size() > 0:
+		_apply_saved_modifications(modifications, start_x,start_y)
+	
 #func unload_distant_chunks():
 	#var player_tile_pos = tilemap.local_to_map(player.position)
 	#var player_chunk = Vector2i(
@@ -373,7 +373,7 @@ func mine():
 		
 	elif atlas_coords.y == 3: #block destroyed
 		# In mine() and place():
-		ChunkManager.record_block_modification(tile_pos,source_id,tilemap.get_cell_atlas_coords(0, tile_pos))
+		ChunkManager.record_block_modification(tile_pos,-1,Vector2i(-1,-1))
 		AudioManager.play_random_pitch(AudioManager.mining_block,0.7,1.1)
 		if source_id == 0 or source_id == 3:
 			spawn_drop(Vector2(tilemap.map_to_local(tile_pos)),1,"stone","Stone",stone_texture)

@@ -52,6 +52,8 @@ func _load_chunk_from_disk(chunk_pos: Vector2) -> ChunkData:
 	return ResourceLoader.load(path) if ResourceLoader.exists(path) else null
 
 func _save_chunk(chunk: ChunkData):
+	# Explicitly mark chunk as modified
+	chunk.should_persist = true  # Add this property to ChunkData
 	ResourceSaver.save(chunk, _get_chunk_path(chunk.chunk_position))
 
 func _get_chunk_path(chunk_pos: Vector2) -> String:

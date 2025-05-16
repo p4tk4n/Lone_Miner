@@ -35,6 +35,9 @@ var item_textures: Dictionary = {
 
 var item_textures_keys = item_textures.keys()
 
+var current_seed = 1
+var last_played_seed: int
+
 func _ready():
 	inventory.resize(default_inventory_size)
 
