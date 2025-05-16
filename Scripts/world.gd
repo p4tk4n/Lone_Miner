@@ -12,7 +12,6 @@ var world_seed = randi()
 @onready var player_inventory = $hotbar/InventoryNode
 @onready var tutorial_ui = $player/Tutorial
 @onready var player = $player
-@onready var loadAndSaveManager = $LoadAndSaveManager
 
 @onready var mining_particle = preload("res://Scenes/mining_particle.tscn")
 @onready var item = preload("res://Scenes/item.tscn")
@@ -71,6 +70,7 @@ func _ready():
 		floori(player.position.x / (chunk_size * tilemap.tile_set.tile_size.x)),
 		floori(player.position.y / (chunk_size * tilemap.tile_set.tile_size.y))
 	)
+	
 	update_active_chunks(start_chunk)
 	$Effects/vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	player_inventory.visible = true			
@@ -97,15 +97,36 @@ func update_active_chunks(center_chunk: Vector2i):
 
 func _apply_saved_modifications(modifications: Dictionary, chunk_start_x: int, chunk_start_y: int):
 	for local_pos in modifications:
-		var world_pos = Vector2(
-			chunk_start_x + local_pos.x,
-			chunk_start_y + local_pos.y
-		)	
-		var tile_id = modifications[local_pos]
-		if tile_id == -1:
-			tilemap.erase_cell(0, world_pos)
-		else:
-			tilemap.set_cell(0, world_pos, tile_id, Vector2i(0,0))
+		var world_pos = Vector2i(
+			chunk_start_x + int(local_pos.x),
+			chunk_start_y + int(local_pos.y)
+		)
+		var tile_data = modifications[local_pos]
+		
+		# Handle both old (int) and new (dict) formats
+		if tile_data is Dictionary:  # New format
+			if tile_data.has("id"):
+				var tile_id = tile_data["id"]
+				if tile_id == -1:
+					tilemap.erase_cell(0, world_pos)
+				else:
+					var atlas_coords = tile_data.get("atlas", Vector2i(0, 0))
+					tilemap.set_cell(0, world_pos, tile_id, atlas_coords)
+		else:  # Legacy format (just tile_id)
+			if tile_data == -1:
+				tilemap.erase_cell(0, world_pos)
+			else:
+				tilemap.set_cell(0, world_pos, tile_data, _get_default_atlas_coords(tile_data))
+
+# Helper to get proper visual variants
+func _get_default_atlas_coords(tile_id: int) -> Vector2i:
+	match tile_id:
+		0: return Vector2i(6, 0)  # Stone
+		1: return Vector2i(1, 0)  # Coal  
+		2: return Vector2i(1, 0)  # Iron
+		3: return Vector2i(1, 0)  # Placed stone
+		4: return Vector2i(1, 0)  # Ruby
+		_: return Vector2i(0, 0)
 		
 func generate_chunk(chunk_x: int, chunk_y: int):
 	var start_x = chunk_x * chunk_size
@@ -276,7 +297,8 @@ func generate_ore(noise: Noise, threshold: float, source_id: int, _atlas_coords:
 
 				if tile_below in valid_tiles:
 					tilemap.set_cell(0, tile_pos, source_id, tile_below)	# Set ore tile
-					print("Ore generated at: ", tile_pos, " with source_id: ", source_id)			
+					print("Ore generated at: ", tile_pos, " with source_id: ", source_id)	
+							
 func spawn_merchant():
 	var merchant_instance = merchant_scene.instantiate()
 	merchant_instance.position = player.position
@@ -316,12 +338,12 @@ func place():
 	var tile_pos = get_tile_under_mouse()
 	var current_block = Global.inventory[player_inventory.hovered_index]
 	
-	if current_block and current_block["item_type"] in buildable_blocks:
+	if current_block and current_block["item_type"] in buildable_blocks and tilemap.get_cell_source_id(0,tile_pos) == -1:
 		var chunk_pos = Vector2i(
 			floori(tile_pos.x / float(chunk_size)),
 			floori(tile_pos.y / float(chunk_size))
 		)
-		ChunkManager.record_block_modification(tile_pos,3)
+		ChunkManager.record_block_modification(tile_pos,3,Vector2i(1,0))
 		
 		tilemap.set_cell(0, tile_pos, 3, Vector2i(1, 0))
 		current_block["quantity"] -= 1
@@ -350,6 +372,8 @@ func mine():
 		tilemap.set_cell(0, tile_pos, source_id, new_tile_coords)  # Keep source ID the same
 		
 	elif atlas_coords.y == 3: #block destroyed
+		# In mine() and place():
+		ChunkManager.record_block_modification(tile_pos,source_id,tilemap.get_cell_atlas_coords(0, tile_pos))
 		AudioManager.play_random_pitch(AudioManager.mining_block,0.7,1.1)
 		if source_id == 0 or source_id == 3:
 			spawn_drop(Vector2(tilemap.map_to_local(tile_pos)),1,"stone","Stone",stone_texture)
@@ -362,7 +386,6 @@ func mine():
 		
 		elif source_id == 4:
 			spawn_drop(Vector2(tilemap.map_to_local(tile_pos)),1,"ruby","Ruby",ruby_texture)
-		ChunkManager.record_block_modification(tile_pos, -1)
 		tilemap.erase_cell(0, tile_pos)  # Remove the tile
 
 ##############SIGNALS######################
@@ -424,4 +447,3 @@ func _process(_delta):
 	if Global.did_mine and Global.did_scroll and Global.did_tab:
 		tutorial_ui.visible = false
 	queue_redraw()
-	

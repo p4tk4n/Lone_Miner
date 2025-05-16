@@ -3,7 +3,8 @@ extends Resource
 class_name ChunkData
 
 @export var chunk_position := Vector2.ZERO
-@export var modified_blocks := {}  # {Vector2(local_x, local_y): tile_id}
+# In chunk_data.gd
+@export var modified_blocks := {}  # Format: {Vector2: {"id": int, "atlas_id": int, "coords": Vector2i}}
 @export var last_modified := 0  # Unix timestamp
 
 # Helper to convert to/from local coordinates

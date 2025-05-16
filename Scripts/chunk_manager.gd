@@ -2,20 +2,26 @@
 extends Node
 
 const CHUNK_SIZE := 16
-const SAVE_DIR := "user://Resources/Custom Res/"
+const SAVE_DIR := "user://chunk_data/"
 
 var modified_chunks := {}  # {Vector2: ChunkData}
 
 func _ready():
-	DirAccess.make_dir_recursive_absolute(SAVE_DIR)
-
+	var dir = DirAccess.open("user://")
+	
+	if dir.make_dir_recursive("chunk_data") != OK:
+		push_error("Failed to create chunk_data dir!")
+	
 # Core API --------------------------------------------------
-func record_block_modification(world_pos: Vector2, tile_id: int):
+func record_block_modification(world_pos: Vector2, tile_id: int, atlas_coords: Vector2i):
 	var chunk_pos = _world_to_chunk(world_pos)
 	var chunk = _get_or_create_chunk(chunk_pos)
 	var local_pos = chunk.world_to_local(world_pos, CHUNK_SIZE)
 	
-	chunk.modified_blocks[local_pos] = tile_id
+	chunk.modified_blocks[local_pos] = {
+		"id": tile_id,
+		"atlas": atlas_coords
+	}
 	chunk.last_modified = Time.get_unix_time_from_system()
 	_save_chunk(chunk)
 
